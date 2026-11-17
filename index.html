@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Una vivienda para recorrer · Webs & More</title>
+<style>
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:#171e1b;color:#fff;font-family:Arial,sans-serif}.nav{position:fixed;z-index:5;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:24px 5vw;background:linear-gradient(#101512b8,transparent);font-size:11px;letter-spacing:.2em;text-transform:uppercase}.nav a{color:white;text-decoration:none}.brand{font-weight:700}.route{height:900vh}.stage{position:sticky;top:0;height:100svh;overflow:hidden;background:#111}.stage video{position:absolute;width:100%;height:100%;object-fit:cover}.shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(8,13,10,.6),transparent 70%),linear-gradient(0deg,rgba(8,13,10,.5),transparent 40%);pointer-events:none}.overlay{position:absolute;left:7vw;bottom:18%;width:min(520px,85vw);opacity:0;transform:translateY(12px);transition:opacity .22s,transform .22s;pointer-events:none}.overlay.visible{opacity:1;transform:none}.eyebrow{color:#dfcda8;text-transform:uppercase;letter-spacing:.23em;font-size:10px}.overlay h1,.overlay h2,.end h2{font:normal clamp(40px,6vw,88px)/1.03 Georgia,serif;margin:.3em 0}.overlay p{line-height:1.6;color:#f4f0e9;max-width:37ch}.hint{font-size:11px;text-transform:uppercase;letter-spacing:.15em;margin-top:28px}.counter{position:absolute;right:5vw;bottom:7%;font-size:11px;letter-spacing:.12em}.progress{position:absolute;bottom:0;left:0;height:2px;width:100%;background:#ffffff40}.progress span{display:block;height:100%;width:0;background:#e2cda3}.end{min-height:70vh;text-align:center;padding:14vh 24px;background:#e8e3d7;color:#1a211d}.end a{display:inline-block;color:inherit;margin-top:20px}.notice{font-size:12px;color:#626861}.error{position:absolute;top:25%;left:8%;max-width:400px}.error:empty{display:none}@media(max-width:600px){.nav{padding:20px}.nav .label{display:none}.overlay{left:7%;bottom:19%}.route{height:750vh}.stage video{object-fit:cover}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.overlay{transition:none}}
+</style>
+</head>
+<body>
+<header class="nav"><a class="brand" href="#inicio">Webs &amp; More</a><span class="label">Una vivienda para recorrer</span><a href="#final">Final del recorrido</a></header>
+<main id="inicio"><section class="route" id="recorrido" aria-label="Recorrido interactivo por la vivienda"><div class="stage">
+<video id="video" muted playsinline preload="auto" src="apartamento-muestra.mp4" aria-label="Recorrido por un apartamento de muestra"></video><div class="shade"></div>
+<div class="overlay visible" data-from="0" data-to="0.10"><span class="eyebrow">Un espacio, muchas historias</span><h1>Entra.<br>Estás en casa.</h1><p>Descubre la vivienda a tu ritmo, desde el primer paso hasta el último rincón.</p><div class="hint">↓ &nbsp; Desliza para empezar</div></div>
+<div class="overlay" data-from="0.11" data-to="0.29"><span class="eyebrow">01 · Cocina</span><h2>Un lugar para<br>crear y compartir</h2><p>La cocina reúne todo lo necesario para el día a día en un espacio práctico y acogedor.</p></div>
+<div class="overlay" data-from="0.30" data-to="0.57"><span class="eyebrow">02 · Zona de estar</span><h2>La vida ocurre<br>aquí</h2><p>Un ambiente abierto que conecta el descanso con las actividades cotidianas.</p></div>
+<div class="overlay" data-from="0.58" data-to="0.76"><span class="eyebrow">03 · Espacio de trabajo</span><h2>Un rincón<br>para concentrarse</h2><p>Una zona junto a la ventana que se adapta a trabajar, crear o disfrutar del tiempo libre.</p></div>
+<div class="overlay" data-from="0.77" data-to="1.01"><span class="eyebrow">04 · Dormitorio</span><h2>Un espacio<br>para descansar</h2><p>La luz natural acompaña el ambiente más tranquilo de la vivienda.</p></div>
+<p class="error" id="error" role="status"></p><div class="counter"><span id="number">00</span> / 100</div><div class="progress"><span id="bar"></span></div>
+</div></section><footer class="end" id="final"><span class="eyebrow">Fin del recorrido</span><h2>Un hogar,<br>una nueva forma de verlo.</h2><p>Webs &amp; More</p><a href="#inicio">Volver a empezar ↑</a><p class="notice">Demostración interna con el vídeo del apartamento de muestra.</p></footer></main>
+<script>
+const video=document.getElementById('video'),route=document.getElementById('recorrido'),number=document.getElementById('number'),bar=document.getElementById('bar'),overlays=[...document.querySelectorAll('.overlay')];let target=0,queued=false;
+function seek(){if(!Number.isFinite(video.duration)||video.seeking)return;if(Math.abs(video.currentTime-target)>.025)video.currentTime=target}
+function update(){queued=false;const distance=Math.max(1,route.offsetHeight-innerHeight),p=Math.max(0,Math.min(1,-route.getBoundingClientRect().top/distance));number.textContent=String(Math.round(p*100)).padStart(2,'0');bar.style.width=(p*100)+'%';overlays.forEach(el=>el.classList.toggle('visible',p>=Number(el.dataset.from)&&p<Number(el.dataset.to)));if(Number.isFinite(video.duration)){target=p*Math.max(0,video.duration-.05);seek()}}
+function schedule(){if(!queued){queued=true;requestAnimationFrame(update)}}
+video.addEventListener('loadedmetadata',update);video.addEventListener('seeked',seek);video.addEventListener('error',()=>{document.getElementById('error').textContent='No se ha podido cargar el vídeo del recorrido.'});addEventListener('scroll',schedule,{passive:true});addEventListener('resize',schedule);update();
+</script></body></html>
